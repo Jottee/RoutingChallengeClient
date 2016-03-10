@@ -29,28 +29,40 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             // you'll probably want to process the data, update the forwarding table, etc....
 
             // reading one cell from the DataTable can be done using the  dt.get(row,column)  method
-
-           /* example code for inserting a route into the forwardingtable:
-               BasicRoute r=new BasicRoute();
-               r.destination= ...somedestination...;
-               r.nextHop=...someneighbour...;
-              forwardingTable.put(...somedestination... , r);
-           */
-
-           /* example code for checking whether some destination is already in the forwardingtable, and accessing it:
-               if (forwardingTable.containsKey(dest)) {
-                   BasicRoute r=forwardingTable.get(dest);
-                   // do something with r.destination and r.nextHop; you can even modify them
-               }
-           */
+            for (int q = 0; q < dt.getNRows(); q++) {
+            	if (forwardingTable.containsKey(dt.get(q, 0))) {
+            		BasicRoute r = forwardingTable.get(dt.get(q, 0));
+            		if (dt.get(q, 1) + linkcost < r.linkcost) {
+            			BasicRoute newR = new BasicRoute();
+                        r.destination = dt.get(q, 0);
+                        r.nextHop = neighbour;
+                        r.linkcost = linkcost + dt.get(q, 1);
+                        forwardingTable.put(dt.get(q, 0) , newR);
+            		}
+            		
+            	} else {
+            		BasicRoute r = new BasicRoute();
+                    r.destination = dt.get(q, 0);
+                    r.nextHop = neighbour;
+                    r.linkcost = linkcost + dt.get(q, 1);
+                    forwardingTable.put(neighbour , r);
+            	}
+            }
 
         }
 
         // and send out one (or more, if you want) distance vector packets
         // the actual distance vector data must be stored in the DataTable structure
-        DataTable dt = new DataTable(3);   // the 3 is the number of columns, you can change this
+        DataTable dt = new DataTable(2);   // the 3 is the number of columns, you can change this
         // you'll probably want to put some useful information into dt here
         // by using the  dt.set(row, column, value)  method.
+        int j = 0;
+        for (Integer dest : forwardingTable.keySet()) {
+        	 dt.set(j, 0, dest);
+        	 dt.set(j, 1, forwardingTable.get(dest).linkcost);
+        	 j++;
+        }
+       
 
         // next, actually send out the packet, with our own address as the source address
         // and 0 as the destination address: that's a broadcast to be received by all neighbours.

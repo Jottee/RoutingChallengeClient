@@ -6,5 +6,5 @@ package client;
  * @version 09-03-2015
  */
 public class BasicRoute extends AbstractRoute {
-
+ public int linkcost;
 }
