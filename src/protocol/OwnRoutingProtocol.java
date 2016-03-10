@@ -21,7 +21,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
     public void init(LinkLayer linkLayer) {
         this.linkLayer = linkLayer;
         BasicRoute ownRoute = new BasicRoute();
-        ownRoute.linkcost = Integer.MIN_VALUE;
+        ownRoute.linkcost = 0;
         ownRoute.destination = this.linkLayer.getOwnAddress();
         ownRoute.nextHop = this.linkLayer.getOwnAddress();
         forwardingTable.put(this.linkLayer.getOwnAddress(), ownRoute);
@@ -39,7 +39,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             int neighbour = packets[i].getSourceAddress();          // from whom is the packet?
             int linkcost = this.linkLayer.getLinkCost(neighbour);   // what's the link cost from/to this neighbour?
             DataTable dt = packets[i].getData();                    // other data contained in the packet
-            System.out.println("received packet from " + neighbour + " with " + dt.getNRows() + " rows of data");
+            //System.out.println("received packet from " + neighbour + " with " + dt.getNRows() + " rows of data");
 
             
             neighbours.add(neighbour);
@@ -50,9 +50,15 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             	 if (((neighbour == forwardingTable.get(dt.get(q, 0)).nextHop) || forwardingTable.containsKey(dt.get(q, 0))) && dt.get(q, 2) != linkLayer.getOwnAddress() ) {
                      BasicRoute r = forwardingTable.get(dt.get(q, 0));
                      if (dt.get(q, 1) + linkcost < r.linkcost) {
+                    	// System.out.println("Destination " + dt.get(q, 0) + " neighbour:" + neighbour);
                          r.destination = dt.get(q, 0);
                          r.nextHop = neighbour;
-                         r.linkcost = linkcost + dt.get(q, 1);
+                         	if (dt.get(q, 1) == Integer.MAX_VALUE || dt.get(q, 2) == linkLayer.getOwnAddress()) {
+                         		r.linkcost = Integer.MAX_VALUE;
+                         	} else {
+                         		//System.out.println("Linkcost " + linkcost + "dt.get(q, 1) " + dt.get(q, 1));
+                         		r.linkcost = linkcost + dt.get(q, 1);
+                         	}
                          forwardingTable.put(dt.get(q, 0), r);
                      }
                  }
@@ -60,7 +66,11 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             		BasicRoute r = new BasicRoute();
                     r.destination = dt.get(q, 0);
                     r.nextHop = neighbour;
-                    r.linkcost = linkcost + dt.get(q, 1);
+                    if (dt.get(q, 1) == Integer.MAX_VALUE || dt.get(q, 2) == linkLayer.getOwnAddress()) {
+                 		r.linkcost = Integer.MAX_VALUE;
+                 	} else {
+                 		r.linkcost = linkcost + dt.get(q, 1);
+                 	}
                     forwardingTable.put(dt.get(q, 0) , r);
             	}
             }
@@ -88,6 +98,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
         int j = 0;
         for (Integer dest : forwardingTable.keySet()) {
         	 dt.set(j, 0, dest);
+        	 System.out.println(forwardingTable.get(dest).linkcost);
         	 dt.set(j, 1, forwardingTable.get(dest).linkcost);
         	 dt.set(j, 2, forwardingTable.get(dest).nextHop);
         	 j++;
