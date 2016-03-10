@@ -19,7 +19,7 @@ public class Program {
     private static String password = "fiets";
 
     // Change to your protocol implementation
-    private static Class<? extends IRoutingProtocol> protocolImpl = DummyRoutingProtocol.class;
+    private static Class<? extends IRoutingProtocol> protocolImpl = OwnRoutingProtocol.class;
 
     // Challenge server address
     private static String serverAddress = "netsys.student.utwente.nl";

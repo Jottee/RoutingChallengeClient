@@ -56,7 +56,9 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
         DataTable dt = new DataTable(2);   // the 3 is the number of columns, you can change this
         // you'll probably want to put some useful information into dt here
         // by using the  dt.set(row, column, value)  method.
-        int j = 0;
+        int j = 1;
+        dt.set(0, 0, linkLayer.getOwnAddress());
+        dt.set(0, 1, 0);
         for (Integer dest : forwardingTable.keySet()) {
         	 dt.set(j, 0, dest);
         	 dt.set(j, 1, forwardingTable.get(dest).linkcost);
