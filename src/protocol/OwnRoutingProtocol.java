@@ -46,14 +46,16 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             
             // reading one cell from the DataTable can be done using the  dt.get(row,column)  method
             for (int q = 0; q < dt.getNRows(); q++) {
-            	 if (forwardingTable.containsKey(dt.get(q, 0)) && !(dt.get(q, 2) == linkLayer.getOwnAddress())) {
-            		BasicRoute r = forwardingTable.get(dt.get(q, 0));
-            		if (dt.get(q, 1) + linkcost < r.linkcost) {
-            			r.destination = dt.get(q, 0);
-                        r.nextHop = neighbour;
-                        r.linkcost = linkcost + dt.get(q, 1);
-                        forwardingTable.put(dt.get(q, 0) , r);
-            		}
+                if (forwardingTable.containsKey(dt.get(q, 0))) {
+            	 if ((neighbour == forwardingTable.get(dt.get(q, 0)).nextHop || forwardingTable.containsKey(dt.get(q, 0))) && dt.get(q, 2) != linkLayer.getOwnAddress() ) {
+                     BasicRoute r = forwardingTable.get(dt.get(q, 0));
+                     if (dt.get(q, 1) + linkcost < r.linkcost) {
+                         r.destination = dt.get(q, 0);
+                         r.nextHop = neighbour;
+                         r.linkcost = linkcost + dt.get(q, 1);
+                         forwardingTable.put(dt.get(q, 0), r);
+                     }
+                 }
             	} else if (!(dt.get(q, 2) == linkLayer.getOwnAddress())){
             		BasicRoute r = new BasicRoute();
                     r.destination = dt.get(q, 0);
