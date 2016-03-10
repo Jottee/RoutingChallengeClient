@@ -11,6 +11,11 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
     @Override
     public void init(LinkLayer linkLayer) {
         this.linkLayer = linkLayer;
+        BasicRoute ownRoute = new BasicRoute();
+        ownRoute.linkcost = 0;
+        ownRoute.destination = this.linkLayer.getOwnAddress();
+        ownRoute.nextHop = this.linkLayer.getOwnAddress();
+        forwardingTable.put(this.linkLayer.getOwnAddress(), ownRoute);
     }
 
 
@@ -27,7 +32,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             System.out.println("received packet from " + neighbour + " with " + dt.getNRows() + " rows of data");
 
             // reading one cell from the DataTable can be done using the  dt.get(row,column)  method
-            for (int q = 0; q <= dt.getNRows(); q++) {
+            for (int q = 0; q < dt.getNRows(); q++) {
             	if (forwardingTable.containsKey(dt.get(q, 0))) {
             		BasicRoute r = forwardingTable.get(dt.get(q, 0));
             		if (dt.get(q, 1) + linkcost < r.linkcost) {
@@ -43,7 +48,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
                     r.destination = dt.get(q, 0);
                     r.nextHop = neighbour;
                     r.linkcost = linkcost + dt.get(q, 1);
-                    forwardingTable.put(neighbour , r);
+                    forwardingTable.put(dt.get(q, 0) , r);
             	}
             }
 
@@ -54,9 +59,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
         DataTable dt = new DataTable(2);   // the 3 is the number of columns, you can change this
         // you'll probably want to put some useful information into dt here
         // by using the  dt.set(row, column, value)  method.
-        int j = 1;
-        dt.set(0, 0, linkLayer.getOwnAddress());
-        dt.set(0, 1, 0);
+        int j = 0;
         for (Integer dest : forwardingTable.keySet()) {
         	 dt.set(j, 0, dest);
         	 dt.set(j, 1, forwardingTable.get(dest).linkcost);
