@@ -26,10 +26,8 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
             DataTable dt = packets[i].getData();                    // other data contained in the packet
             System.out.println("received packet from " + neighbour + " with " + dt.getNRows() + " rows of data");
 
-            // you'll probably want to process the data, update the forwarding table, etc....
-
             // reading one cell from the DataTable can be done using the  dt.get(row,column)  method
-            for (int q = 0; q < dt.getNRows(); q++) {
+            for (int q = 0; q <= dt.getNRows(); q++) {
             	if (forwardingTable.containsKey(dt.get(q, 0))) {
             		BasicRoute r = forwardingTable.get(dt.get(q, 0));
             		if (dt.get(q, 1) + linkcost < r.linkcost) {
