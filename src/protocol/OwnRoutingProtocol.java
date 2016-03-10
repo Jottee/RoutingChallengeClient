@@ -21,7 +21,7 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
     public void init(LinkLayer linkLayer) {
         this.linkLayer = linkLayer;
         BasicRoute ownRoute = new BasicRoute();
-        ownRoute.linkcost = 0;
+        ownRoute.linkcost = Integer.MIN_VALUE;
         ownRoute.destination = this.linkLayer.getOwnAddress();
         ownRoute.nextHop = this.linkLayer.getOwnAddress();
         forwardingTable.put(this.linkLayer.getOwnAddress(), ownRoute);
