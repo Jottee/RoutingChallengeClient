@@ -33,14 +33,13 @@ public class OwnRoutingProtocol implements IRoutingProtocol {
 
             // reading one cell from the DataTable can be done using the  dt.get(row,column)  method
             for (int q = 0; q < dt.getNRows(); q++) {
-            	if (forwardingTable.containsKey(dt.get(q, 0))) {
+                if (forwardingTable.containsKey(dt.get(q, 0))) {
             		BasicRoute r = forwardingTable.get(dt.get(q, 0));
             		if (dt.get(q, 1) + linkcost < r.linkcost) {
-            			BasicRoute newR = new BasicRoute();
-                        r.destination = dt.get(q, 0);
+            			r.destination = dt.get(q, 0);
                         r.nextHop = neighbour;
                         r.linkcost = linkcost + dt.get(q, 1);
-                        forwardingTable.put(dt.get(q, 0) , newR);
+                        forwardingTable.put(dt.get(q, 0) , r);
             		}
             		
             	} else {
